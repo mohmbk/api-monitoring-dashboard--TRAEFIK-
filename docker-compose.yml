@@ -1,0 +1,89 @@
+
+
+services:
+  
+  traefik:
+    image: traefik:v3.7
+    container_name: traefik
+    restart: unless-stopped
+    command: 
+      - "--api.insecure=true"  # active le dashboard traefik
+      - "--providers.docker=true" #	Traefik lit les conteneurs et labels via Docker
+      - "--providers.docker.exposedbydefault=false" #		N'expose que les conteneurs avec traefik.enable=true
+      - "--entrypoints.web.address=:80" #		Crée la porte d'entrée nommée web, sur le port 80
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - app-network
+
+      
+
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend
+    restart: unless-stopped
+    environment:
+      - MONGODB_URI=mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@database:27017/?authSource=admin
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`api.localhost`)"
+      - "traefik.http.routers.backend.entrypoints=web"
+      - "traefik.http.services.backend.loadbalancer.server.port=8080"
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ./frontend/api-monitoring-dashboard/
+      dockerfile: Dockerfile
+    container_name: api-monitoring-dashboard
+    restart: unless-stopped
+    environment:
+      - VITE_API_URL=${VITE_API_URL}
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`dashboard.localhost`)"
+      - "traefik.http.routers.frontend.entrypoints=web"
+      - "traefik.http.services.frontend.loadbalancer.server.port=80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+
+  database:
+    image: mongo:8
+    container_name: database
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  mongo-data:
+networks:
+  app-network:
+    driver: bridge

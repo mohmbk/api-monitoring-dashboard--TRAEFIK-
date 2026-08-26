@@ -1,0 +1,70 @@
+.container{
+    height: 50vh;
+    width: 100%;
+    background-color: red;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.addapi{
+    height: 80%;
+    width: 50%;
+    background-color: blue;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.inpapi{
+    height: 20%;
+    width: 60%;
+    border: none;
+    border-radius: 15px;
+    padding-left: 10px;
+}
+
+.apibtn{
+    height: 15%;
+    width: 20%;
+    background-color: aqua;
+    border: none;
+    border-radius: 15px;
+}
+
+.api{
+    height: 30vh;
+    background-color: aqua;
+    display: flex;
+    flex-direction: row ;
+    justify-content: space-around ;
+    align-items: center ;
+     
+}
+
+.left{
+    height: 100%;
+    width: 25%;
+    background-color: chocolate;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.right {
+    height: 100%;
+    width: 25%;
+    background-color: chocolate;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+}
+.mbtn{
+    height: 30%;
+    width: 40%;
+    background-color: rgb(8, 112, 202);
+    border-radius: 15px;
+}
