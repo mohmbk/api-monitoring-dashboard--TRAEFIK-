@@ -10,6 +10,7 @@ var usercollection *mongo.Collection
 
 
 
+
 type User struct {
 	ID               primitive.ObjectID `bson:"_id,omitempty" json:"id"`
 	Username         string             `bson:"username" json:"username"`

@@ -6,13 +6,11 @@ services:
   vault:
     image: hashicorp/vault:1.17
     container_name: vault
-    restart: unless-stopped
-    cap_add:
-      - IPC_LOCK
+    entrypoint: ["vault"]
+    command: ["server", "-config=/vault/config/vault.hcl"]
     volumes:
       - vault-data:/vault/data
       - ./vault/config:/vault/config
-    command: server -config=/vault/config/vault.hcl
     networks:
       - app-network
 
